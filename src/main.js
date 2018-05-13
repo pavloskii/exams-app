@@ -1,6 +1,8 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
+import { store } from './store';
+import axios from 'axios';
 import {
   Vuetify,
   VApp,
@@ -11,7 +13,12 @@ import {
   VIcon,
   VGrid,
   VToolbar,
-  transitions
+  transitions,
+  VAvatar,
+  VDivider,
+  VCard,
+  VForm,
+  VTextField
 } from 'vuetify'
 import '../node_modules/vuetify/src/stylus/app.styl'
 
@@ -25,24 +32,33 @@ Vue.use(Vuetify, {
     VIcon,
     VGrid,
     VToolbar,
-    transitions
+    transitions,
+    VAvatar,
+    VDivider,
+    VCard,
+    VForm,
+    VTextField
   },
   theme: {
-    primary: '#ee44aa',
-    secondary: '#424242',
-    accent: '#82B1FF',
-    error: '#FF5252',
-    info: '#2196F3',
-    success: '#4CAF50',
-    warning: '#FFC107'
+    primary: "#1565C0",
+    secondary: "#5C6BC0",
+    accent: "#E91E63",
+    error: "#f44336",
+    warning: "#ffeb3b",
+    info: "#2196f3",
+    success: "#4caf50"
   }
 })
-
+// indigo color #283593
 Vue.config.productionTip = false
+
+axios.defaults.baseURL = "https://test-r-app.firebaseio.com";
+
 
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
   router,
+  store,
   render: h => h(App)
 })
