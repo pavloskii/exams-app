@@ -11,6 +11,7 @@ Vue.use(Router)
 export default new Router({
   mode: 'history',
   routes: [
+    { path: '/', name: 'Home', redirect: "/dashboard" },
     { path: '/signup', name: 'SignUp', component: Signup },
     { path: '/signin', name: 'SingIn', component: Signin },
     { path: '/dashboard', name: 'Dashboard', component: Dashboard, beforeEnter: AuthGuard },

@@ -40,7 +40,7 @@
           v-for="(item, i) in navItems"
           :key="i"
           :to="item.link"
-         
+          active-class="cyan--text"
         >
           <v-list-tile-action>
             <v-icon v-html="item.icon"></v-icon>
@@ -151,10 +151,49 @@ export default {
   methods: {
     onLogout() {
       this.$store.dispatch("logout");
-    },
-    created() {
-      this.$store.dispatch("tryAutoLogin");
     }
+  },
+  created() {
+    this.$store.dispatch("tryAutoLogin");
   }
 };
 </script>
+
+<style>
+.custom-loader {
+  animation: loader 1s infinite;
+  display: flex;
+}
+@-moz-keyframes loader {
+  from {
+    transform: rotate(0);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+@-webkit-keyframes loader {
+  from {
+    transform: rotate(0);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+@-o-keyframes loader {
+  from {
+    transform: rotate(0);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes loader {
+  from {
+    transform: rotate(0);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+</style>

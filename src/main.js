@@ -18,9 +18,13 @@ import {
   VDivider,
   VCard,
   VForm,
-  VTextField
+  VTextField,
+  VAlert
 } from 'vuetify'
 import '../node_modules/vuetify/src/stylus/app.styl'
+
+import AlertCmp from './components/Shared/Alert.vue';
+import ErrorFilter from './filters/error';
 
 Vue.use(Vuetify, {
   components: {
@@ -37,7 +41,8 @@ Vue.use(Vuetify, {
     VDivider,
     VCard,
     VForm,
-    VTextField
+    VTextField,
+    VAlert
   },
   theme: {
     primary: "#1565C0",
@@ -49,10 +54,15 @@ Vue.use(Vuetify, {
     success: "#4caf50"
   }
 })
-// indigo color #283593
+
+// Filters
+Vue.filter('error', ErrorFilter);
+// Components
+Vue.component('app-alert', AlertCmp);
+
 Vue.config.productionTip = false
 
-axios.defaults.baseURL = "https://test-r-app.firebaseio.com";
+// axios.defaults.baseURL = "https://test-r-app.firebaseio.com";
 
 
 /* eslint-disable no-new */
