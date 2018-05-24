@@ -37,7 +37,13 @@ export default {
                 .then(res => {
                     commit('setLoading', false);
                     commit('clearError');
-                    commit('storeUser', { email: authData.email });
+                    commit('storeUser', {
+                        email: authData.email,
+                        exams: {
+                            taken: [],
+                            created: []
+                        }
+                    });
                     commit('authUser', {
                         token: res.data.idToken,
                         userId: res.data.localId,
@@ -51,7 +57,7 @@ export default {
                     localStorage.setItem('refreshToken', res.data.refreshToken);
                     localStorage.setItem('expirationDate', expirationDate);
 
-                    dispatch('storeUser', { email: authData.email });
+                    dispatch('storeUserData', { email: authData.email });
                     // dispatch('setLogoutTimer', res.data.expiresIn);
                 })
                 .catch(error => {
@@ -83,7 +89,13 @@ export default {
                         userId: res.data.localId,
                         refreshToken: res.data.refreshToken
                     });
-                    commit('storeUser', { email: authData.email });
+                    commit('storeUser', {
+                        email: authData.email,
+                        exams: {
+                            taken: [],
+                            created: []
+                        }
+                    });
                     // dispatch('setLogoutTimer', res.data.expiresIn);
                 })
                 .catch(error => {
@@ -102,53 +114,63 @@ export default {
             router.replace('/signin');
         },
         tryAutoLogin({ commit, dispatch }) {
+            commit('setLoading', true);
+
             const token = localStorage.getItem('token');
             if (!token) {
                 return;
             }
+
             const expirationDate = localStorage.getItem('expirationDate');
             const now = new Date();
-            const refreshToken = localStorage.getItem('refreshToken');
             if (now >= expirationDate) {
-                axios.post("https://securetoken.googleapis.com/v1/token?key=AIzaSyD20HO0pCPRCK2CC-j6tYueALGXg93ybD0", {
-                    grant_type: "refresh_token",
-                    refresh_token: refreshToken,
-                })
-                    .then(res => {
-                        commit('setLoading', false);
-                        commit('clearError');
-                        console.log(res)
-                        const now = new Date();
-                        const expirationDate = new Date(now.getTime() + res.data.expires_in * 1000);
-                        localStorage.setItem('token', res.data.id_token);
-                        localStorage.setItem('refreshToken', res.data.refresh_token);
-                        localStorage.setItem('expirationDate', expirationDate);
-
-                        commit('authUser', {
-                            token: res.data.id_token,
-                            userId: res.data.user_id,
-                            refreshToken: res.data.refresh_token
-                        });
-                        commit('storeUser', { email: "profile" });
-                    })
-                    .catch(error => {
-                        commit('setError', error.response.data.error);
-                        commit('setLoading', false);
-                        console.log("ERROR", error.response.data.error)
-                    });
-
-                // return;
-            } else {
-                const userId = localStorage.getItem('userId');
-                commit('authUser', {
-                    token: token,
-                    userId: userId,
-                    refreshToken: refreshToken
-                });
+                return;
             }
 
-            dispatch('getCurrentUser');
+            const refreshToken = localStorage.getItem('refreshToken');
+            const userId = localStorage.getItem('userId');
+            commit('authUser', {
+                token: token,
+                userId: userId,
+                refreshToken: refreshToken
+            });
+            commit('setLoading', false);
         },
+        // refreshToken({ commit }) {
+        //     commit('setLoading', true);
+        //     axios.post("https://securetoken.googleapis.com/v1/token?key=AIzaSyD20HO0pCPRCK2CC-j6tYueALGXg93ybD0", {
+        //         grant_type: "refresh_token",
+        //         refresh_token: refreshToken,
+        //     })
+        //         .then(res => {
+        //             commit('setLoading', false);
+        //             commit('clearError');
+        //             console.log(res)
+        //             const now = new Date();
+        //             const expirationDate = new Date(now.getTime() + res.data.expires_in * 1000);
+        //             localStorage.setItem('token', res.data.id_token);
+        //             localStorage.setItem('refreshToken', res.data.refresh_token);
+        //             localStorage.setItem('expirationDate', expirationDate);
+
+        //             commit('authUser', {
+        //                 token: res.data.id_token,
+        //                 userId: res.data.user_id,
+        //                 refreshToken: res.data.refresh_token
+        //             });
+        //             commit('storeUser', {
+        //                 email: authData.email,
+        //                 exams: {
+        //                     taken: [],
+        //                     created: []
+        //                 }
+        //             });
+        //         })
+        //         .catch(error => {
+        //             commit('setError', error.response.data.error);
+        //             commit('setLoading', false);
+        //             console.log("ERROR", error.response.data.error)
+        //         });
+        // },
         getCurrentUser({ commit, state }) {
             if (!state.idToken) {
                 return;
@@ -158,13 +180,21 @@ export default {
                 .then(res => console.log(res))
                 .catch(error => console.log(error.response));
         },
-        storeUser({ commit, state }, userData) {
+        storeUserData({ commit, state }, userData) {
+            commit('setLoading', true);
             if (!state.idToken) {
                 return;
             }
-            database.post('/users' + '?auth=' + state.idToken, userData)
-                .then(res => console.log(res))
-                .catch(error => console.log(error));
+            database.put('/users/' + state.userId + '.json?auth=' + state.idToken, userData)
+                .then(res => {
+                    commit('setLoading', true);
+                    console.log(res)
+                })
+                .catch(error => {
+                    commit('setError', error.response.data.error);
+                    commit('setLoading', false);
+                    console.log("ERROR", error.response.data.error)
+                });
         }
     },
     getters: {
@@ -174,5 +204,13 @@ export default {
         isAuthenticated(state) {
             return state.idToken !== null;
         }
+        // isTokenExpired(state) {
+        //     const expirationDate = localStorage.getItem('expirationDate');
+        //     if (!expirationDate) {
+        //         return true;
+        //     }
+
+        //     return new Date() >= expirationDate;
+        // }
     }
 };

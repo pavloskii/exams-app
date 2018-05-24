@@ -19,7 +19,8 @@ import {
   VCard,
   VForm,
   VTextField,
-  VAlert
+  VAlert,
+  VProgressCircular
 } from 'vuetify'
 import '../node_modules/vuetify/src/stylus/app.styl'
 
@@ -42,7 +43,8 @@ Vue.use(Vuetify, {
     VCard,
     VForm,
     VTextField,
-    VAlert
+    VAlert,
+    VProgressCircular
   },
   theme: {
     primary: "#1565C0",
@@ -70,5 +72,8 @@ new Vue({
   el: '#app',
   router,
   store,
-  render: h => h(App)
+  render: h => h(App),
+  beforeCreate() {
+    this.$store.dispatch("tryAutoLogin");
+  }
 })

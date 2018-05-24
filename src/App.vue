@@ -141,20 +141,20 @@ export default {
 
       return navItems;
     },
-    userIsAuthenticated() {
-      return (
-        this.$store.getters.user !== null &&
-        this.$store.getters.user !== undefined
-      );
+    // userIsAuthenticated() {
+    //   return (
+    //     this.$store.getters.user !== null &&
+    //     this.$store.getters.user !== undefined
+    //   );
+    // }
+    userIsAuthenticated(){
+      return this.$store.getters.isAuthenticated;
     }
   },
   methods: {
     onLogout() {
       this.$store.dispatch("logout");
     }
-  },
-  created() {
-    this.$store.dispatch("tryAutoLogin");
   }
 };
 </script>
